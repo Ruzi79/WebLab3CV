@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ],
     profileDescription: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
   };
-
   function makeEditable(element) {
     element.addEventListener("click", () => {
       const input = document.createElement("input");
@@ -83,22 +82,30 @@ document.addEventListener("DOMContentLoaded", () => {
       input.style.width = "100%";
       element.replaceWith(input);
       input.focus();
-
+  
       function save() {
+        const value = input.value.trim();
+        if (value === "") {
+          const parent = input.closest("li, p, h3");
+          if (parent) {
+            parent.remove();
+            return;
+          }
+        }
         const newSpan = document.createElement("span");
-        newSpan.innerText = input.value;
+        newSpan.innerText = value;
         newSpan.className = element.className;
         makeEditable(newSpan);
         input.replaceWith(newSpan);
       }
-
+  
       input.addEventListener("blur", save);
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") save();
       });
     });
   }
-
+  
   const h1 = document.querySelector("h1");
   h1.innerHTML = `<span class="editable bold">${profile.firstName}</span> <span class="editable" style="color: #163853;">${profile.lastName}</span>`;
   document.querySelector("h2.market").innerHTML = `<span class="editable">${profile.title}</span>`;
@@ -330,5 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addLangBtn.addEventListener("click", addLanguage);
   document.querySelector(".languages").appendChild(addLangBtn);
 });
+
+
 
   
