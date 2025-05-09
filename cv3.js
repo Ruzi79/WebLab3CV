@@ -79,30 +79,85 @@ document.addEventListener("DOMContentLoaded", () => {
       const input = document.createElement("input");
       input.type = "text";
       input.value = element.innerText;
-      input.style.width = "100%";
-      element.replaceWith(input);
+      input.style.width = "calc(100% - 80px)";
+      input.style.marginRight = "10px";
+      input.style.padding = "5px";
+      input.style.borderRadius = "4px";
+      input.style.border = "1px solid #ddd";
+  
+      const saveBtn = document.createElement("button");
+      saveBtn.innerText = "Save";
+      saveBtn.style.padding = "5px 10px";
+      saveBtn.style.marginRight = "5px";
+      saveBtn.style.fontSize = "12px";
+      saveBtn.style.borderRadius = "4px";
+      saveBtn.style.border = "none";
+      saveBtn.style.cursor = "pointer";
+      saveBtn.style.backgroundColor = "#163853";
+      saveBtn.style.color = "white";
+  
+      const container = document.createElement("span");
+      container.style.display = "flex";
+      container.style.alignItems = "center";
+  
+      const li = element.closest("li");
+      const isDeletable =
+        li &&
+        (element.closest(".skills ul") ||
+          element.closest(".languages ul") ||
+          element.closest(".education ul") ||
+          element.closest(".work-experience ul"));
+  
+      const deleteBtn = document.createElement("button");
+      deleteBtn.innerText = "Delete";
+      deleteBtn.style.padding = "5px 10px";
+      deleteBtn.style.fontSize = "12px";
+      deleteBtn.style.borderRadius = "4px";
+      deleteBtn.style.border = "none";
+      deleteBtn.style.cursor = "pointer";
+      deleteBtn.style.backgroundColor = "#e74c3c";
+      deleteBtn.style.color = "#fff";
+  
+      container.appendChild(input);
+      container.appendChild(saveBtn);
+      if (isDeletable) container.appendChild(deleteBtn);
+  
+      element.replaceWith(container);
       input.focus();
   
       function save() {
         const value = input.value.trim();
-        if (value === "") {
-          const parent = input.closest("li, p, h3");
-          if (parent) {
-            parent.remove();
-            return;
-          }
-        }
+        const originalValue = element.innerText;
         const newSpan = document.createElement("span");
-        newSpan.innerText = value;
+        newSpan.innerText = value === "" ? originalValue : value;
         newSpan.className = element.className;
         makeEditable(newSpan);
-        input.replaceWith(newSpan);
+        container.replaceWith(newSpan);
       }
   
-      input.addEventListener("blur", save);
+      saveBtn.addEventListener("click", save);
+  
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") save();
       });
+  
+      input.addEventListener("blur", () => {
+        setTimeout(() => {
+          if (
+            document.activeElement !== saveBtn &&
+            document.activeElement !== deleteBtn
+          ) {
+            save();
+          }
+        }, 150);
+      });
+  
+      if (isDeletable) {
+        deleteBtn.addEventListener("click", () => {
+          const parentLi = container.closest("li");
+          if (parentLi) parentLi.remove();
+        });
+      }
     });
   }
   
